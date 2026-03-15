@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Librería Digital</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --navy:        #07152b;
+  --navy-mid:    #0e2548;
+  --navy-3:      #163264;
+  --steel:       #2e6db4;
+  --steel-light: #4d8ed4;
+  --sky:         #7fb3e8;
+  --silver:      #a8bfd4;
+  --silver-2:    #c8d9ea;
+  --silver-3:    #dce8f4;
+  --silver-4:    #edf3fa;
+  --white:       #f5f9fd;
+  --text:        #07152b;
+  --text-mid:    #2a4466;
+  --text-light:  #5a7898;
+  --accent:      #1e90d6;
+  --accent-glow: rgba(30,144,214,0.18);
+  --shadow-sm:   0 2px 12px rgba(7,21,43,0.08);
+  --shadow-md:   0 6px 28px rgba(7,21,43,0.13);
+  --shadow-lg:   0 12px 50px rgba(7,21,43,0.18);
+  --shadow-glow: 0 0 30px rgba(30,144,214,0.15);
+}
+*, *::before, *::after { box-sizing: border-box; margin:0; padding:0; }
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--silver-4);
+  color: var(--text);
+  min-height: 100vh;
+  background-image:
+    radial-gradient(ellipse at 20% 0%, rgba(46,109,180,0.07) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 100%, rgba(14,37,72,0.06) 0%, transparent 60%);
+}
+.view { display: none; }
+.view.active { display: block; }
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--silver-4); }
+::-webkit-scrollbar-thumb { background: var(--silver-2); border-radius: 3px; }
+
+/* HEADER */
+header {
+  background: var(--navy);
+  position: sticky; top: 0; z-index: 100;
+  border-bottom: 1px solid rgba(168,191,212,0.12);
+}
+.header-inner {
+  max-width: 1240px; margin: 0 auto; padding: 0 2rem;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 66px;
+}
+.logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.55rem; font-weight: 700; cursor: pointer;
+  color: var(--white); display: flex; align-items: center; gap: 0.6rem;
+}
+.logo-icon {
+  width: 32px; height: 32px;
+  background: linear-gradient(135deg, var(--steel), var(--accent));
+  border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; box-shadow: 0 2px 12px var(--accent-glow);
+}
+.logo em { color: var(--sky); font-style: normal; }
+nav { display: flex; gap: 0.25rem; align-items: center; }
+nav button {
+  background: none; border: none; color: var(--silver);
+  font-family: 'Outfit', sans-serif; font-size: 0.88rem; font-weight: 400;
+  padding: 0.5rem 1rem; border-radius: 7px; cursor: pointer; transition: all 0.2s;
+}
+nav button:hover { color: var(--white); background: rgba(255,255,255,0.07); }
+nav button.active { color: var(--white); }
+.nav-admin {
+  background: linear-gradient(135deg, var(--steel), var(--accent)) !important;
+  color: var(--white) !important; font-weight: 500 !important;
+  box-shadow: 0 2px 14px var(--accent-glow);
+}
+.chrome-line {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--silver-2) 30%, var(--steel-light) 50%, var(--silver-2) 70%, transparent);
+  opacity: 0.5;
+}
+
+/* HERO */
+.hero {
+  background: var(--navy); padding: 5rem 2rem 4.5rem;
+  text-align: center; position: relative; overflow: hidden;
+}
+.hero::before {
+  content:''; position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 70% 80% at 50% -20%, rgba(46,109,180,0.35) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 60% at 80% 100%, rgba(30,144,214,0.12) 0%, transparent 60%);
+}
+.hero::after {
+  content:''; position: absolute; inset: 0; pointer-events: none;
+  background-image: linear-gradient(rgba(168,191,212,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(168,191,212,0.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse at 50% 0%, black 30%, transparent 80%);
+}
+.hero-content { position: relative; max-width: 680px; margin: 0 auto; }
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.35rem 1rem; border-radius: 20px;
+  background: rgba(46,109,180,0.2); border: 1px solid rgba(77,142,212,0.3);
+  font-size: 0.75rem; font-weight: 500; color: var(--sky);
+  letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 1.5rem;
+}
+.hero h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2.8rem, 6vw, 4.8rem); font-weight: 600; line-height: 1.05;
+  color: var(--white); margin-bottom: 1.1rem;
+}
+.hero h1 em { color: var(--sky); font-style: italic; }
+.hero p {
+  font-size: 1.05rem; color: var(--silver); font-weight: 300; margin-bottom: 2.5rem;
+}
+.search-wrap {
+  max-width: 540px; margin: 0 auto;
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(168,191,212,0.2);
+  border-radius: 14px; padding: 0.5rem; display: flex; gap: 0.5rem;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+}
+.search-wrap input {
+  flex: 1; background: none; border: none;
+  padding: 0.6rem 0.75rem; font-family: 'Outfit', sans-serif;
+  font-size: 0.95rem; color: var(--white); outline: none;
+}
+.search-wrap input::placeholder { color: var(--text-light); }
+.btn-primary {
+  padding: 0.7rem 1.5rem;
+  background: linear-gradient(135deg, var(--steel), var(--accent));
+  color: var(--white); border: none; border-radius: 9px;
+  font-family: 'Outfit', sans-serif; font-size: 0.9rem; font-weight: 500;
+  cursor: pointer; white-space: nowrap; transition: all 0.2s;
+  box-shadow: 0 2px 14px var(--accent-glow);
+}
+.btn-primary:hover { transform: translateY(-1px); opacity: 0.92; }
+
+/* SECTION */
+.section { max-width: 1240px; margin: 0 auto; padding: 3rem 2rem; }
+.section-title {
+  font-family: 'Cormorant Garamond', serif; font-size: 1.9rem; font-weight: 600;
+  color: var(--navy); margin-bottom: 0.3rem;
+}
+.section-sub { color: var(--text-light); font-size: 0.9rem; font-weight: 300; margin-bottom: 1.75rem; }
+
+/* CATEGORIES */
+.categories { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 2rem; }
+.cat-pill {
+  padding: 0.4rem 0.9rem; border-radius: 20px; font-size: 0.82rem;
+  cursor: pointer; font-family: 'Outfit', sans-serif;
+  border: 1px solid var(--silver-2); background: var(--white);
+  color: var(--text-light); transition: all 0.2s;
+}
+.cat-pill:hover { border-color: var(--steel); color: var(--steel); }
+.cat-pill.active { background: var(--navy-mid); color: var(--sky); border-color: var(--navy-mid); }
+
+/* BOOK GRID */
+.books-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(195px, 1fr));
+  gap: 1.5rem;
+}
+.book-card {
+  background: var(--white); border-radius: 16px; overflow: hidden;
+  box-shadow: var(--shadow-sm); border: 1px solid var(--silver-3);
+  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+  display: flex; flex-direction: column;
+  animation: fadeUp 0.4s ease both;
+}
+.book-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lg), var(--shadow-glow);
+  border-color: var(--steel-light);
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.book-cover { width: 100%; aspect-ratio: 2/3; overflow: hidden; }
+.book-cover img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
+.book-card:hover .book-cover img { transform: scale(1.04); }
+.book-cover-placeholder {
+  width: 100%; aspect-ratio: 2/3;
+  background: linear-gradient(160deg, var(--navy-mid) 0%, var(--navy-3) 60%, var(--steel) 100%);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 1.5rem; text-align: center;
+}
+.placeholder-icon { font-size: 2.8rem; margin-bottom: 0.75rem; opacity: 0.8; }
+.placeholder-title {
+  font-family: 'Cormorant Garamond', serif; font-size: 0.88rem;
+  color: var(--silver-2); font-weight: 600; line-height: 1.35;
+}
+.book-info { padding: 1rem 1.1rem 1.1rem; flex: 1; display: flex; flex-direction: column; }
+.book-title {
+  font-family: 'Cormorant Garamond', serif; font-size: 1rem; font-weight: 600;
+  line-height: 1.3; margin-bottom: 0.3rem; color: var(--navy);
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.book-author {
+  font-size: 0.78rem; color: var(--text-light); font-weight: 300; margin-bottom: 0.75rem;
+  display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;
+}
+.book-price { font-size: 1.2rem; font-weight: 600; color: var(--steel); margin-top: auto; margin-bottom: 0.75rem; }
+.btn-buy {
+  width: 100%; padding: 0.65rem; background: var(--navy-mid); color: var(--sky);
+  border: 1px solid rgba(77,142,212,0.2); border-radius: 9px;
+  font-family: 'Outfit', sans-serif; font-size: 0.83rem; font-weight: 500;
+  cursor: pointer; text-decoration: none; display: block; text-align: center; transition: all 0.2s;
+}
+.btn-buy:hover { background: var(--steel); color: var(--white); border-color: var(--steel); box-shadow: 0 2px 12px var(--accent-glow); }
+
+/* ADMIN */
+.admin-wrap { max-width: 1100px; margin: 0 auto; padding: 2.5rem 2rem; }
+.admin-topbar {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--silver-3);
+}
+.admin-topbar h2 {
+  font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 600; color: var(--navy);
+}
+.admin-topbar p { color: var(--text-light); font-size: 0.88rem; margin-top: 0.25rem; }
+.admin-tabs { display: flex; gap: 0.4rem; margin-bottom: 2rem; flex-wrap: wrap; }
+.tab-btn {
+  padding: 0.55rem 1.2rem; background: var(--white);
+  border: 1px solid var(--silver-3); border-radius: 9px;
+  font-family: 'Outfit', sans-serif; font-size: 0.88rem;
+  cursor: pointer; color: var(--text-light); transition: all 0.2s;
+}
+.tab-btn:hover:not(.active) { border-color: var(--steel); color: var(--steel); }
+.tab-btn.active { background: var(--navy-mid); color: var(--sky); border-color: var(--navy-mid); font-weight: 500; }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* Info box */
+.info-box {
+  background: var(--white); border: 1px solid var(--silver-3);
+  border-left: 3px solid var(--steel); border-radius: 10px;
+  padding: 1.1rem 1.4rem; margin-bottom: 1.5rem;
+  font-size: 0.87rem; color: var(--text-mid); line-height: 1.65;
+}
+.info-box strong { color: var(--navy); }
+.info-box a { color: var(--steel); }
+.api-badge { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; margin-bottom: 0.5rem; color: var(--text-light); }
+.dot { width: 7px; height: 7px; border-radius: 50%; background: #34d399; }
+.dot.warn { background: #fbbf24; }
+
+/* Results */
+.results-list { display: flex; flex-direction: column; gap: 1rem; }
+.result-item {
+  background: var(--white); border-radius: 12px; padding: 1rem 1.1rem;
+  display: flex; gap: 1rem; align-items: flex-start;
+  border: 1px solid var(--silver-3); box-shadow: var(--shadow-sm); transition: box-shadow 0.2s;
+}
+.result-item:hover { box-shadow: var(--shadow-md); }
+.result-thumb { width: 68px; height: 98px; object-fit: cover; border-radius: 7px; flex-shrink: 0; }
+.result-thumb-placeholder {
+  width: 68px; height: 98px; border-radius: 7px; flex-shrink: 0;
+  background: linear-gradient(160deg, var(--navy-mid), var(--navy-3));
+  display: flex; align-items: center; justify-content: center; font-size: 1.8rem;
+}
+.result-body { flex: 1; min-width: 0; }
+.result-title { font-family: 'Cormorant Garamond', serif; font-size: 1rem; font-weight: 600; color: var(--navy); margin-bottom: 0.2rem; }
+.result-author { font-size: 0.82rem; color: var(--text-light); margin-bottom: 0.4rem; font-weight: 300; }
+.result-desc {
+  font-size: 0.8rem; color: var(--text-light); font-weight: 300;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  margin-bottom: 0.75rem; line-height: 1.5;
+}
+.result-actions { display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; }
+.price-input, .lemon-input {
+  padding: 0.45rem 0.7rem; border: 1px solid var(--silver-2); border-radius: 8px;
+  font-family: 'Outfit', sans-serif; font-size: 0.88rem;
+  color: var(--text); background: var(--silver-4); outline: none; transition: border-color 0.2s;
+}
+.price-input { width: 95px; }
+.lemon-input { flex: 1; min-width: 180px; }
+.price-input:focus, .lemon-input:focus { border-color: var(--steel); }
+.btn-add {
+  padding: 0.45rem 1.1rem;
+  background: linear-gradient(135deg, var(--steel), var(--accent));
+  color: var(--white); border: none; border-radius: 8px;
+  font-family: 'Outfit', sans-serif; font-size: 0.83rem; font-weight: 500;
+  cursor: pointer; white-space: nowrap; transition: all 0.2s;
+  box-shadow: 0 2px 10px var(--accent-glow);
+}
+.btn-add:hover { opacity: 0.88; transform: translateY(-1px); }
+.badge-added { font-size: 0.78rem; background: #d1fae5; color: #065f46; padding: 0.3rem 0.8rem; border-radius: 20px; font-weight: 500; }
+
+/* Catalog table */
+.catalog-table { width: 100%; border-collapse: collapse; }
+.catalog-table th {
+  text-align: left; padding: 0.7rem 1rem;
+  font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.6px;
+  color: var(--text-light); border-bottom: 1.5px solid var(--silver-3); font-weight: 500;
+}
+.catalog-table td { padding: 0.85rem 1rem; border-bottom: 1px solid var(--silver-3); font-size: 0.88rem; vertical-align: middle; }
+.catalog-table tr:hover td { background: rgba(237,243,250,0.5); }
+.book-mini-thumb { width: 38px; height: 54px; object-fit: cover; border-radius: 5px; }
+.book-mini-placeholder {
+  width: 38px; height: 54px; border-radius: 5px;
+  background: linear-gradient(160deg, var(--navy-mid), var(--navy-3));
+  display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
+}
+.inline-edit, .inline-url {
+  padding: 0.35rem 0.6rem; border: 1px solid var(--silver-2); border-radius: 6px;
+  font-family: 'Outfit', sans-serif; font-size: 0.85rem;
+  background: var(--silver-4); color: var(--text); outline: none; transition: border-color 0.2s;
+}
+.inline-edit { width: 85px; }
+.inline-url { width: 210px; }
+.inline-edit:focus, .inline-url:focus { border-color: var(--steel); }
+.btn-remove { padding: 0.35rem 0.75rem; background: #fee2e2; color: #b91c1c; border: none; border-radius: 6px; font-size: 0.8rem; cursor: pointer; font-family: 'Outfit', sans-serif; transition: background 0.2s; }
+.btn-remove:hover { background: #fca5a5; }
+
+/* Settings */
+.settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; max-width: 680px; }
+@media (max-width: 600px) { .settings-grid { grid-template-columns: 1fr; } }
+.field-group { display: flex; flex-direction: column; gap: 0.4rem; }
+.field-group.full { grid-column: 1 / -1; }
+.field-group label { font-size: 0.75rem; font-weight: 600; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.6px; }
+.field-input {
+  padding: 0.7rem 0.9rem; border: 1px solid var(--silver-2); border-radius: 10px;
+  font-family: 'Outfit', sans-serif; font-size: 0.93rem;
+  color: var(--text); background: var(--white); outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.field-input:focus { border-color: var(--steel); box-shadow: 0 0 0 3px var(--accent-glow); }
+.btn-save {
+  margin-top: 1.25rem; padding: 0.75rem 2rem;
+  background: var(--navy-mid); color: var(--sky);
+  border: 1px solid rgba(77,142,212,0.2); border-radius: 10px;
+  font-family: 'Outfit', sans-serif; font-size: 0.93rem; font-weight: 500;
+  cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.5rem;
+}
+.btn-save:hover { background: var(--steel); color: var(--white); }
+.save-ok { font-size: 0.82rem; color: #34d399; opacity: 0; transition: opacity 0.3s; }
+.save-ok.show { opacity: 1; }
+
+/* Lock */
+.lock-overlay {
+  position: fixed; inset: 0; background: rgba(7,21,43,0.78); backdrop-filter: blur(6px);
+  z-index: 200; display: flex; align-items: center; justify-content: center;
+}
+.lock-box {
+  background: var(--white); border-radius: 20px; padding: 2.5rem 2.25rem;
+  width: 360px; text-align: center;
+  box-shadow: var(--shadow-lg), 0 0 60px var(--accent-glow);
+  border: 1px solid var(--silver-2);
+}
+.lock-icon {
+  width: 56px; height: 56px; margin: 0 auto 1rem;
+  background: linear-gradient(135deg, var(--navy-mid), var(--steel));
+  border-radius: 14px; display: flex; align-items: center; justify-content: center;
+  font-size: 1.6rem; box-shadow: 0 4px 20px var(--accent-glow);
+}
+.lock-box h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 600; margin-bottom: 0.4rem; color: var(--navy); }
+.lock-box p { color: var(--text-light); font-size: 0.88rem; margin-bottom: 1.5rem; }
+.lock-box input {
+  width: 100%; padding: 0.8rem 1rem; border: 1px solid var(--silver-2); border-radius: 10px;
+  font-family: 'Outfit', sans-serif; font-size: 1rem; margin-bottom: 1rem; outline: none;
+  text-align: center; letter-spacing: 4px; color: var(--text); background: var(--silver-4);
+  transition: border-color 0.2s;
+}
+.lock-box input:focus { border-color: var(--steel); box-shadow: 0 0 0 3px var(--accent-glow); }
+.lock-error { color: #ef4444; font-size: 0.83rem; margin-top: 0.5rem; }
+.lock-hint { margin-top: 1rem; font-size: 0.76rem; color: var(--silver); }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 2rem; right: 2rem;
+  background: var(--navy-mid); color: var(--sky);
+  padding: 0.85rem 1.5rem; border-radius: 10px; font-size: 0.88rem; font-weight: 500;
+  box-shadow: var(--shadow-lg); z-index: 999; border: 1px solid rgba(77,142,212,0.2);
+  transform: translateY(120%); transition: transform 0.3s cubic-bezier(.34,1.56,.64,1);
+  pointer-events: none;
+}
+.toast.show { transform: translateY(0); }
+
+/* Empty / loading */
+.empty-state { text-align: center; padding: 4rem 2rem; color: var(--text-light); }
+.empty-state .icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.6; }
+.loading-dots { display: flex; gap: 0.45rem; justify-content: center; padding: 2rem; }
+.loading-dots span { width: 8px; height: 8px; background: var(--steel); border-radius: 50%; animation: bounce 0.6s infinite alternate; }
+.loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+.loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes bounce { from { transform: translateY(0); opacity:.5; } to { transform: translateY(-10px); opacity:1; } }
+
+@media (max-width: 768px) {
+  .books-grid { grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); }
+  .result-actions { flex-direction: column; align-items: stretch; }
+  .lemon-input { min-width: unset; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo" onclick="showView('store')" id="store-logo">
+      <div class="logo-icon">📚</div>
+      <span>Mi<em>Librería</em></span>
+    </div>
+    <nav>
+      <button onclick="showView('store')" id="nav-store" class="active">Catálogo</button>
+      <button onclick="enterAdmin()" class="nav-admin">⚙ Admin</button>
+    </nav>
+  </div>
+</header>
+<div class="chrome-line" style="height:2px; background:linear-gradient(90deg,transparent,var(--silver-2) 30%,var(--steel-light) 50%,var(--silver-2) 70%,transparent); opacity:.5;"></div>
+
+<!-- STORE -->
+<div id="view-store" class="view active">
+  <div class="hero">
+    <div class="hero-content">
+      <div class="hero-eyebrow">✦ Libros Digitales · Descarga Inmediata</div>
+      <h1 id="hero-title">Tu próxima lectura<br><em>te está esperando</em></h1>
+      <p id="hero-subtitle">Pagá seguro con tarjeta · Recibís tu libro al instante</p>
+      <div class="search-wrap">
+        <input type="text" id="store-search" placeholder="Buscar título, autor…" oninput="filterCatalog(this.value)"/>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title">Catálogo</h2>
+    <p class="section-sub" id="catalog-count">Cargando…</p>
+    <div id="category-filter" class="categories"></div>
+    <div id="catalog-grid" class="books-grid"></div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="view-admin" class="view">
+  <div class="admin-wrap">
+    <div class="admin-topbar">
+      <div>
+        <h2>Panel de Administración</h2>
+        <p>Buscá libros, gestioná el catálogo y configurá tu tienda.</p>
+      </div>
+    </div>
+    <div class="admin-tabs">
+      <button class="tab-btn active" onclick="switchTab('search',this)">🔍 Buscar libros</button>
+      <button class="tab-btn" onclick="switchTab('catalog',this)">📋 Mi catálogo</button>
+      <button class="tab-btn" onclick="switchTab('settings',this)">⚙ Configuración</button>
+    </div>
+
+    <div id="tab-search" class="tab-panel active">
+      <div class="info-box">
+        <div class="api-badge"><span class="dot" id="api-dot"></span><span id="api-status-text">Google Books API</span></div>
+        Buscá por título, autor o ISBN. Ingresá el <strong>precio</strong> y el <strong>link de Lemon Squeezy</strong> y hacé clic en <strong>Agregar</strong>.
+      </div>
+      <div style="display:flex; gap:0.6rem; max-width:620px; margin-bottom:1.75rem;">
+        <input class="field-input" style="flex:1" type="text" id="gb-search-input" placeholder="Título, autor, ISBN…" onkeydown="if(event.key==='Enter') searchBooks()"/>
+        <button class="btn-primary" onclick="searchBooks()">Buscar</button>
+      </div>
+      <div id="gb-results"></div>
+    </div>
+
+    <div id="tab-catalog" class="tab-panel">
+      <div id="admin-catalog-content"></div>
+    </div>
+
+    <div id="tab-settings" class="tab-panel">
+
+      <!-- SUPABASE STATUS -->
+      <div id="sb-status-box" class="info-box" style="border-left-color: var(--silver);">
+        <div class="api-badge"><span class="dot warn" id="sb-dot"></span><span id="sb-status-text">Supabase no configurado — usando almacenamiento local</span></div>
+        Conectá Supabase para sincronizar el catálogo entre todos tus dispositivos. Es gratis y no necesita instalar nada.
+      </div>
+
+      <div class="settings-grid">
+        <div class="field-group full"><label>Nombre de la tienda</label><input type="text" class="field-input" id="s-store-name" placeholder="Mi Librería Digital"/></div>
+        <div class="field-group full"><label>Tagline</label><input type="text" class="field-input" id="s-tagline" placeholder="Pagá seguro · Descarga inmediata"/></div>
+        <div class="field-group full" style="margin-top:.5rem; padding-top:1.25rem; border-top:1px solid var(--silver-3);">
+          <label style="color:var(--steel);">☁ Supabase — URL del proyecto</label>
+          <input type="url" class="field-input" id="s-sb-url" placeholder="https://xxxx.supabase.co"/>
+        </div>
+        <div class="field-group full">
+          <label style="color:var(--steel);">☁ Supabase — Anon Key</label>
+          <input type="text" class="field-input" id="s-sb-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9…"/>
+        </div>
+        <div class="field-group full" style="margin-top:.5rem; padding-top:1.25rem; border-top:1px solid var(--silver-3);">
+          <label>Google Books API Key (opcional)</label>
+          <input type="text" class="field-input" id="s-api-key" placeholder="AIza…"/>
+        </div>
+        <div class="field-group full"><label>Contraseña de admin</label><input type="password" class="field-input" id="s-admin-pass" placeholder="Nueva contraseña (vacío = sin cambios)"/></div>
+      </div>
+      <button class="btn-save" onclick="saveSettings()">Guardar cambios <span class="save-ok" id="save-ok">✓ Guardado</span></button>
+
+      <div style="margin-top:2.5rem; padding-top:1.75rem; border-top:1px solid var(--silver-3);">
+        <h3 style="font-family:'Cormorant Garamond',serif; font-size:1.3rem; margin-bottom:0.75rem; color:var(--navy);">☁ Cómo configurar Supabase (5 min)</h3>
+        <div class="info-box">
+          <strong>1.</strong> Entrá a <a href="https://supabase.com" target="_blank">supabase.com</a> → New project → elegí nombre y región.<br>
+          <strong>2.</strong> En el editor SQL (<em>SQL Editor → New query</em>), ejecutá esto:<br><br>
+          <code style="display:block; background:var(--silver-4); padding:.75rem 1rem; border-radius:8px; font-size:.8rem; line-height:1.7; white-space:pre-wrap;">create table books (
+  id text primary key,
+  title text not null,
+  authors text,
+  thumb text,
+  categories text,
+  price numeric not null,
+  lemon_url text not null,
+  created_at timestamptz default now()
+);
+alter table books enable row level security;
+create policy "lectura publica" on books for select using (true);
+create policy "admin total"     on books for all   using (true);</code><br>
+          <strong>3.</strong> Ir a <em>Project Settings → API</em> → copiá la <strong>Project URL</strong> y la <strong>anon public key</strong>.<br>
+          <strong>4.</strong> Pegá ambas en los campos de arriba y guardá. ¡Listo!
+        </div>
+      </div>
+
+      <div style="margin-top:2rem; padding-top:1.75rem; border-top:1px solid var(--silver-3);">
+        <h3 style="font-family:'Cormorant Garamond',serif; font-size:1.3rem; margin-bottom:0.75rem; color:var(--navy);">🚀 Cómo publicar</h3>
+        <div class="info-box">
+          <strong>1. GitHub:</strong> Nuevo repositorio público → subí este <code>index.html</code>.<br>
+          <strong>2. Cloudflare Pages:</strong> <a href="https://pages.cloudflare.com" target="_blank">pages.cloudflare.com</a> → Conectar GitHub → elegí el repo → deploy automático.<br>
+          <strong>3. Dominio propio:</strong> Desde Cloudflare podés conectar tu dominio sin costo extra.<br><br>
+          <strong>Sin Supabase:</strong> el catálogo vive en este navegador (localStorage). <strong>Con Supabase:</strong> se sincroniza en todos los dispositivos al instante.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LOCK -->
+<div id="lock-overlay" class="lock-overlay" style="display:none;">
+  <div class="lock-box">
+    <div class="lock-icon">🔐</div>
+    <h3>Panel de Admin</h3>
+    <p>Ingresá la contraseña para continuar</p>
+    <input type="password" id="lock-input" placeholder="••••••" onkeydown="if(event.key==='Enter') checkLock()"/>
+    <button class="btn-primary" style="width:100%;" onclick="checkLock()">Ingresar</button>
+    <p class="lock-error" id="lock-error"></p>
+    <p class="lock-hint">Contraseña por defecto: <strong>admin123</strong></p>
+  </div>
+</div>
+<div id="toast" class="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+// ── STATE ────────────────────────────────────────────────
+let catalog      = [];
+let settings     = JSON.parse(localStorage.getItem('lb_settings') || '{}');
+let sb           = null;   // Supabase client (null = not configured)
+let adminUnlocked = false, activeCategory = 'all';
+const DEFAULT_PASS = 'admin123';
+const getPass = () => settings.adminPass || DEFAULT_PASS;
+
+// ── SUPABASE INIT ────────────────────────────────────────
+function initSupabase() {
+  const url = settings.sbUrl?.trim();
+  const key = settings.sbKey?.trim();
+  if (url && key) {
+    try {
+      sb = window.supabase.createClient(url, key);
+      updateSbStatus(true);
+    } catch { sb = null; updateSbStatus(false); }
+  } else {
+    sb = null;
+    updateSbStatus(false);
+  }
+}
+
+function updateSbStatus(ok) {
+  const dot  = document.getElementById('sb-dot');
+  const text = document.getElementById('sb-status-text');
+  if (!dot) return;
+  if (ok) {
+    dot.className = 'dot';
+    text.textContent = 'Supabase conectado — catálogo sincronizado ✓';
+    document.getElementById('sb-status-box').style.borderLeftColor = 'var(--steel)';
+  } else {
+    dot.className = 'dot warn';
+    text.textContent = 'Supabase no configurado — usando almacenamiento local';
+    document.getElementById('sb-status-box').style.borderLeftColor = 'var(--silver)';
+  }
+}
+
+// ── CATALOG LOAD/SAVE ────────────────────────────────────
+async function loadCatalog() {
+  if (sb) {
+    try {
+      const { data, error } = await sb.from('books').select('*').order('created_at');
+      if (!error && data) {
+        // map snake_case → camelCase
+        catalog = data.map(r => ({
+          id: r.id, title: r.title, authors: r.authors,
+          thumb: r.thumb, categories: r.categories,
+          price: r.price, lemonUrl: r.lemon_url
+        }));
+        // keep localStorage in sync as cache
+        localStorage.setItem('lb_catalog', JSON.stringify(catalog));
+        return;
+      }
+    } catch {}
+  }
+  // fallback: localStorage
+  catalog = JSON.parse(localStorage.getItem('lb_catalog') || '[]');
+}
+
+async function dbInsert(book) {
+  if (!sb) return false;
+  const { error } = await sb.from('books').insert({
+    id: book.id, title: book.title, authors: book.authors,
+    thumb: book.thumb, categories: book.categories,
+    price: book.price, lemon_url: book.lemonUrl
+  });
+  return !error;
+}
+
+async function dbUpdate(book) {
+  if (!sb) return false;
+  const { error } = await sb.from('books').update({
+    price: book.price, lemon_url: book.lemonUrl
+  }).eq('id', book.id);
+  return !error;
+}
+
+async function dbDelete(id) {
+  if (!sb) return false;
+  const { error } = await sb.from('books').delete().eq('id', id);
+  return !error;
+}
+
+function saveLocalCache() {
+  localStorage.setItem('lb_catalog', JSON.stringify(catalog));
+}
+
+// ── INIT ─────────────────────────────────────────────────
+async function init() {
+  applySettings();
+  initSupabase();
+  await loadCatalog();
+  renderStoreCatalog();
+}
+
+function applySettings() {
+  if (settings.storeName) {
+    document.getElementById('store-logo').innerHTML =
+      `<div class="logo-icon">📚</div><span>${escHtml(settings.storeName)}</span>`;
+    document.title = settings.storeName;
+  }
+  if (settings.tagline) document.getElementById('hero-subtitle').textContent = settings.tagline;
+}
+
+// ── VIEWS ─────────────────────────────────────────────────
+function showView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  if (name === 'store') document.getElementById('nav-store').classList.add('active');
+  if (name === 'admin') renderAdminCatalog();
+}
+
+// ── LOCK ──────────────────────────────────────────────────
+function enterAdmin() {
+  if (adminUnlocked) { showView('admin'); return; }
+  document.getElementById('lock-overlay').style.display = 'flex';
+  document.getElementById('lock-input').value = '';
+  document.getElementById('lock-error').textContent = '';
+  setTimeout(() => document.getElementById('lock-input').focus(), 80);
+}
+function checkLock() {
+  if (document.getElementById('lock-input').value === getPass()) {
+    adminUnlocked = true;
+    document.getElementById('lock-overlay').style.display = 'none';
+    showView('admin'); loadSettingsForm(); updateSbStatus(!!sb);
+  } else {
+    document.getElementById('lock-error').textContent = 'Contraseña incorrecta';
+    document.getElementById('lock-input').value = '';
+  }
+}
+document.getElementById('lock-overlay').addEventListener('click', e => {
+  if (e.target === e.currentTarget) e.target.style.display = 'none';
+});
+
+// ── TABS ──────────────────────────────────────────────────
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+  if (name === 'catalog') renderAdminCatalog();
+}
+
+// ── GOOGLE BOOKS ──────────────────────────────────────────
+async function searchBooks() {
+  const q = document.getElementById('gb-search-input').value.trim();
+  if (!q) return;
+  const container = document.getElementById('gb-results');
+  container.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div>';
+  const apiKey = settings.apiKey ? '&key=' + settings.apiKey : '';
+  try {
+    const data = await (await fetch(
+      `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(q)}&maxResults=10${apiKey}`
+    )).json();
+    document.getElementById('api-dot').className = 'dot';
+    document.getElementById('api-status-text').textContent = 'Google Books · Conectada ✓';
+    if (!data.items?.length) {
+      container.innerHTML = '<div class="empty-state"><div class="icon">🔍</div><p>Sin resultados. Probá otro término.</p></div>';
+      return;
+    }
+    container.innerHTML = `<div class="results-list">${data.items.map(item => {
+      const v      = item.volumeInfo || {};
+      const title  = v.title || 'Sin título';
+      const authors = (v.authors || ['Desconocido']).join(', ');
+      const desc   = v.description || '';
+      const thumb  = v.imageLinks?.thumbnail?.replace('http://','https://') || '';
+      const cats   = (v.categories || []).join(', ');
+      const inCat  = catalog.some(b => b.id === item.id);
+      const id     = item.id;
+      return `<div class="result-item" id="ri-${id}">
+        ${thumb ? `<img class="result-thumb" src="${thumb}" alt="" onerror="this.style.display='none'">` : `<div class="result-thumb-placeholder">📖</div>`}
+        <div class="result-body">
+          <div class="result-title">${escHtml(title)}</div>
+          <div class="result-author">${escHtml(authors)}${cats?' · '+escHtml(cats):''}</div>
+          <div class="result-desc">${escHtml(desc.substring(0,160))}${desc.length>160?'…':''}</div>
+          <div class="result-actions">
+            <input type="number" class="price-input" id="price-${id}" placeholder="$ Precio" min="0" step="0.01"/>
+            <input type="url"    class="lemon-input" id="lemon-${id}" placeholder="Link de Lemon Squeezy…"/>
+            ${inCat
+              ? `<span class="badge-added">✓ En catálogo</span>`
+              : `<button class="btn-add" id="btn-${id}" onclick="addBook('${id}',${JSON.stringify(title)},${JSON.stringify(authors)},${JSON.stringify(thumb)},${JSON.stringify(cats)})">+ Agregar</button>`}
+          </div>
+        </div>
+      </div>`;
+    }).join('')}</div>`;
+  } catch {
+    document.getElementById('api-dot').className = 'dot warn';
+    document.getElementById('api-status-text').textContent = 'Error al conectar';
+    container.innerHTML = '<div class="empty-state"><div class="icon">⚠️</div><p>Error al buscar. Revisá tu conexión.</p></div>';
+  }
+}
+
+// ── ADD BOOK ──────────────────────────────────────────────
+async function addBook(id, title, authors, thumb, categories) {
+  const price    = parseFloat(document.getElementById('price-' + id).value);
+  const lemonUrl = document.getElementById('lemon-' + id).value.trim();
+  if (!price || price <= 0) { showToast('⚠ Ingresá un precio válido'); return; }
+  if (!lemonUrl)            { showToast('⚠ Ingresá el link de Lemon Squeezy'); return; }
+
+  const btn = document.getElementById('btn-' + id);
+  if (btn) { btn.disabled = true; btn.textContent = 'Guardando…'; }
+
+  const book = { id, title, authors, thumb, categories, price, lemonUrl };
+
+  if (sb) {
+    const ok = await dbInsert(book);
+    if (!ok) { showToast('⚠ Error al guardar en Supabase'); if (btn) { btn.disabled=false; btn.textContent='+ Agregar'; } return; }
+  }
+
+  catalog.push(book);
+  saveLocalCache();
+  renderStoreCatalog(document.getElementById('store-search').value, activeCategory);
+
+  if (btn) btn.outerHTML = '<span class="badge-added">✓ Agregado</span>';
+  showToast(`✓ «${title.substring(0,30)}» agregado${sb ? ' y sincronizado' : ''}`);
+}
+
+// ── STORE RENDER ──────────────────────────────────────────
+function renderStoreCatalog(filter = '', category = 'all') {
+  const grid    = document.getElementById('catalog-grid');
+  const countEl = document.getElementById('catalog-count');
+  let books = catalog;
+  if (filter) books = books.filter(b =>
+    b.title.toLowerCase().includes(filter.toLowerCase()) ||
+    b.authors.toLowerCase().includes(filter.toLowerCase()));
+  if (category !== 'all') books = books.filter(b =>
+    (b.categories||'').toLowerCase().includes(category.toLowerCase()));
+
+  const allCats = [...new Set(catalog.flatMap(b =>
+    (b.categories||'').split(',').map(c=>c.trim()).filter(Boolean)))];
+  document.getElementById('category-filter').innerHTML = allCats.length
+    ? ['all',...allCats].map(c =>
+        `<button class="cat-pill ${activeCategory===c?'active':''}" onclick="setCategory('${escHtml(c)}')">${c==='all'?'Todos':escHtml(c)}</button>`
+      ).join('')
+    : '';
+
+  if (!books.length) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
+      <div class="icon">${catalog.length?'🔍':'📚'}</div>
+      <p>${catalog.length?'Sin resultados para ese filtro.':'El catálogo está vacío. Andá al admin para agregar libros.'}</p>
+    </div>`;
+    countEl.textContent = catalog.length ? '0 resultados' : 'Sin libros aún';
+    return;
+  }
+
+  countEl.textContent = `${books.length} libro${books.length!==1?'s':''} disponible${books.length!==1?'s':''}`;
+  grid.innerHTML = books.map((b,i) => `
+    <div class="book-card" style="animation-delay:${i*0.04}s">
+      ${b.thumb
+        ? `<div class="book-cover"><img src="${b.thumb}" alt="${escHtml(b.title)}" loading="lazy"/></div>`
+        : `<div class="book-cover-placeholder"><div class="placeholder-icon">📖</div><div class="placeholder-title">${escHtml(b.title)}</div></div>`}
+      <div class="book-info">
+        <div class="book-title">${escHtml(b.title)}</div>
+        <div class="book-author">${escHtml(b.authors)}</div>
+        <div class="book-price">${formatPrice(b.price)}</div>
+        <a class="btn-buy" href="${escHtml(b.lemonUrl)}" target="_blank" rel="noopener">Comprar ahora →</a>
+      </div>
+    </div>`).join('');
+}
+
+function filterCatalog(val) { renderStoreCatalog(val, activeCategory); }
+function setCategory(cat)   { activeCategory = cat; renderStoreCatalog(document.getElementById('store-search').value, cat); }
+
+// ── ADMIN CATALOG ─────────────────────────────────────────
+function renderAdminCatalog() {
+  const c = document.getElementById('admin-catalog-content');
+  if (!catalog.length) {
+    c.innerHTML = '<div class="empty-state"><div class="icon">📚</div><p>Sin libros. Usá "Buscar libros" para agregar.</p></div>';
+    return;
+  }
+  c.innerHTML = `<table class="catalog-table">
+    <thead><tr><th></th><th>Libro</th><th>Precio</th><th>Link Lemon Squeezy</th><th></th></tr></thead>
+    <tbody>${catalog.map((b,i) => `<tr>
+      <td>${b.thumb ? `<img class="book-mini-thumb" src="${b.thumb}" alt=""/>` : `<div class="book-mini-placeholder">📖</div>`}</td>
+      <td style="max-width:200px">
+        <div style="font-weight:500">${escHtml(b.title)}</div>
+        <div style="font-size:.77rem;color:var(--text-light)">${escHtml(b.authors)}</div>
+      </td>
+      <td><input class="inline-edit" type="number" value="${b.price}" onchange="updateField(${i},'price',this.value)" min="0" step="0.01"/></td>
+      <td><input class="inline-url"  type="url"    value="${escHtml(b.lemonUrl)}" onchange="updateField(${i},'lemonUrl',this.value)"/></td>
+      <td><button class="btn-remove" onclick="removeBook(${i})">Quitar</button></td>
+    </tr>`).join('')}</tbody>
+  </table>`;
+}
+
+async function updateField(i, field, value) {
+  catalog[i][field] = field === 'price' ? parseFloat(value) : value;
+  if (sb) await dbUpdate(catalog[i]);
+  saveLocalCache();
+  showToast('✓ Cambio guardado' + (sb ? ' y sincronizado' : ''));
+}
+
+async function removeBook(i) {
+  const book = catalog[i];
+  if (sb) {
+    const ok = await dbDelete(book.id);
+    if (!ok) { showToast('⚠ Error al eliminar en Supabase'); return; }
+  }
+  catalog.splice(i, 1);
+  saveLocalCache();
+  renderAdminCatalog();
+  renderStoreCatalog(document.getElementById('store-search').value, activeCategory);
+  showToast('🗑 «' + book.title.substring(0,30) + '» eliminado');
+}
+
+// ── SETTINGS ──────────────────────────────────────────────
+function loadSettingsForm() {
+  document.getElementById('s-store-name').value = settings.storeName || '';
+  document.getElementById('s-tagline').value    = settings.tagline   || '';
+  document.getElementById('s-api-key').value    = settings.apiKey    || '';
+  document.getElementById('s-sb-url').value     = settings.sbUrl     || '';
+  document.getElementById('s-sb-key').value     = settings.sbKey     || '';
+}
+
+async function saveSettings() {
+  const np = document.getElementById('s-admin-pass').value;
+  settings.storeName = document.getElementById('s-store-name').value || 'Mi Librería';
+  settings.tagline   = document.getElementById('s-tagline').value;
+  settings.apiKey    = document.getElementById('s-api-key').value;
+  settings.sbUrl     = document.getElementById('s-sb-url').value.trim();
+  settings.sbKey     = document.getElementById('s-sb-key').value.trim();
+  if (np) settings.adminPass = np;
+
+  localStorage.setItem('lb_settings', JSON.stringify(settings));
+  applySettings();
+
+  // re-init Supabase with new credentials and reload catalog
+  initSupabase();
+  await loadCatalog();
+  renderStoreCatalog(document.getElementById('store-search').value, activeCategory);
+  renderAdminCatalog();
+
+  const ok = document.getElementById('save-ok');
+  ok.classList.add('show'); setTimeout(() => ok.classList.remove('show'), 2500);
+}
+
+// ── UTILS ─────────────────────────────────────────────────
+function formatPrice(p) { return '$\u00a0' + parseFloat(p).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,','); }
+function escHtml(s)     { return s ? String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') : ''; }
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+init();
+</script>
+</body>
+</html>
