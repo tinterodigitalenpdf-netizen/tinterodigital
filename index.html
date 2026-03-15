@@ -558,6 +558,35 @@ function setCategory(cat) {
 }
 
 // ── LOAD STORE PAGE (Supabase-native pagination) ──
+// Elimina tildes: "economica" → encuentra "Económica"
+function norm(s) {
+  return (s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+}
+function fmtCount(n) {
+  return n.toLocaleString('es') + ' libro' + (n!==1?'s':'') + ' encontrado' + (n!==1?'s':'');
+}
+async function tryRpc(filters, offset, page, countEl) {
+  try {
+    const { data, error } = await sb.rpc('search_books', {
+      search_query: filters.q        || '',
+      p_title:      filters.title     || '',
+      p_author:     filters.author    || '',
+      p_publisher:  filters.publisher || '',
+      p_year:       filters.year      || '',
+      p_category:   filters.category  || '',
+      p_limit:      PAGE_SIZE,
+      p_offset:     offset
+    });
+    if (error) return false; // RPC no existe aún
+    totalBooks = data?.[0]?.total_count || 0;
+    renderGrid(data || []);
+    renderPagination(page, totalBooks);
+    countEl.textContent = fmtCount(totalBooks);
+    if (page === 1 && !filters.q && !filters.title) buildCategoryPills();
+    return true;
+  } catch { return false; }
+}
+
 async function loadStorePage(page, filters) {
   currentPage = page;
   const grid    = document.getElementById('catalog-grid');
@@ -568,46 +597,31 @@ async function loadStorePage(page, filters) {
 
   if (sb) {
     try {
-      const { data, error } = await sb.rpc('search_books', {
-        search_query: filters.q        || '',
-        p_title:      filters.title     || '',
-        p_author:     filters.author    || '',
-        p_publisher:  filters.publisher || '',
-        p_year:       filters.year      || '',
-        p_category:   filters.category  || '',
-        p_limit:      PAGE_SIZE,
-        p_offset:     offset
-      });
+      // Intentar primero con función RPC (búsqueda sin tildes del lado servidor)
+      const hasRpc = await tryRpc(filters, offset, page, countEl);
+      if (hasRpc) return;
+
+      // Fallback: query directa (funciona siempre, tildes exactas)
+      let q = sb.from('books').select('*', { count: 'exact' });
+      const fq = norm(filters.q || '');
+      if (fq) q = q.or(`title.ilike.%${filters.q||''}%,authors.ilike.%${filters.q||''}%,publisher.ilike.%${filters.q||''}%`);
+      if (filters.title)     q = q.ilike('title',      '%'+(filters.title||'')+'%');
+      if (filters.author)    q = q.ilike('authors',    '%'+(filters.author||'')+'%');
+      if (filters.publisher) q = q.ilike('publisher',  '%'+(filters.publisher||'')+'%');
+      if (filters.year)      q = q.eq('year', filters.year);
+      if (filters.category)  q = q.ilike('categories', '%'+(filters.category||'')+'%');
+      q = q.order('title').range(offset, offset + PAGE_SIZE - 1);
+
+      const { data, count, error } = await q;
       if (error) throw error;
 
-      totalBooks = data?.[0]?.total_count || 0;
+      totalBooks = count || 0;
       renderGrid(data || []);
       renderPagination(page, totalBooks);
-      countEl.textContent = `${totalBooks.toLocaleString('es')} libro${totalBooks !== 1 ? 's' : ''} encontrado${totalBooks !== 1 ? 's' : ''}`;
-
+      countEl.textContent = fmtCount(totalBooks);
       if (page === 1 && !filters.q && !filters.title) buildCategoryPills();
       return;
-    } catch(e) { console.warn('Supabase RPC error, fallback a query directa', e);
-      // Fallback a query directa si la función RPC no existe aún
-      try {
-        let q = sb.from('books').select('*', { count: 'exact' });
-        if (filters.q) q = q.or(`title.ilike.%${filters.q}%,authors.ilike.%${filters.q}%,publisher.ilike.%${filters.q}%`);
-        if (filters.title)     q = q.ilike('title',     '%'+filters.title+'%');
-        if (filters.author)    q = q.ilike('authors',   '%'+filters.author+'%');
-        if (filters.publisher) q = q.ilike('publisher', '%'+filters.publisher+'%');
-        if (filters.year)      q = q.eq('year', filters.year);
-        if (filters.category)  q = q.ilike('categories', '%'+filters.category+'%');
-        q = q.order('title').range(offset, offset + PAGE_SIZE - 1);
-        const { data, count, error: e2 } = await q;
-        if (e2) throw e2;
-        totalBooks = count || 0;
-        renderGrid(data || []);
-        renderPagination(page, totalBooks);
-        countEl.textContent = `${totalBooks.toLocaleString('es')} libro${totalBooks !== 1 ? 's' : ''} encontrado${totalBooks !== 1 ? 's' : ''}`;
-        if (page === 1 && !filters.q && !filters.title) buildCategoryPills();
-        return;
-      } catch(e3) { console.warn('Supabase error', e3); }
-    }
+    } catch(e) { console.warn('Supabase error:', e); }
   }
 
   // Fallback: localStorage
@@ -622,7 +636,7 @@ async function loadStorePage(page, filters) {
   const page_books = books.slice(offset, offset + PAGE_SIZE);
   renderGrid(page_books);
   renderPagination(page, totalBooks);
-  countEl.textContent = `${totalBooks.toLocaleString('es')} libro${totalBooks !== 1 ? 's' : ''} encontrado${totalBooks !== 1 ? 's' : ''}`;
+  countEl.textContent = fmtCount(totalBooks);
 }
 
 async function buildCategoryPills() {
